@@ -6,11 +6,17 @@ class Background{
         this.row = this.canvasHeight / 100;
         this.image = new Image ();
         this.image.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/images/sprite-inicial.png"
+        this.goalImage = new Image ();
+        this.goalImage.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/images/goal.png"
         this.score1 = 0
         this.score2 = 0
     }
     
-
+    drawGoal(){
+        console.log("drawing goal sign!")
+        game.context.drawImage(this.goalImage,0,19,215,60,250,170, 530, 120)
+    }
+    
     drawScoreboard(){
         game.context.font="16px monospace"
         game.context.fillStyle="#3683D1"

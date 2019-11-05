@@ -6,10 +6,10 @@ class Ball {
         this.ball.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/images/SoccerBall.png"
         this.startX = this.canvasWidth/2-8
         this.startY = this.canvasHeight/2-14
-        this.vx = 3
-        this.vy = 2
-        this.BALLW = 99*0.25
-        this.BALLH = 95*0.25
+        this.vx = 4
+        this.vy = 3
+        this.BALLW = 20 //99*0.2
+        this.BALLH = 19 //95*0.2
     }
 
     drawBall (){

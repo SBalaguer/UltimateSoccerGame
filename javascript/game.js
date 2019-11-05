@@ -20,6 +20,13 @@ class Game{
         this.score1 = 0;
         this.score2 = 0;
         this.goalScored = false;
+        this.globalSound = new Audio();
+        this.globalSound.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/sfx/MainAudio-cut.wav"
+        this.globalSound.volume = 0.2
+        this.globalSound.loop = true;
+        this.goalSound = new Audio();
+        this.goalSound.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/sfx/goal.wav"
+        this.goalSound.volume = 1
     }
     
 
@@ -29,6 +36,7 @@ class Game{
         this.ball.drawBall();
         this.drawPlayers();
         this.movingObjects(0);
+        this.globalSound.play();
     }
 
     reset(){
@@ -86,21 +94,23 @@ class Game{
     }
 
     collision (power){
-        const PLAY1W = this.player1.PLAYW;
-        const PLAY1H = this.player1.PLAYH;
-        const PLAY2W = this.player2.PLAYW;
-        const PLAY2H = this.player2.PLAYH;
-        const BALLW = this.ball.BALLW;
-        const BALLH = this.ball.BALLH;
+        const COEFSEGX = 1.1;
+        const COEFSEGY = 1.1;
 
-        //const COEFSEG = 3;
+        const PLAY1W = this.player1.PLAYW*COEFSEGX;
+        const PLAY1H = this.player1.PLAYH*COEFSEGY;
+        const PLAY2W = this.player2.PLAYW*COEFSEGX;
+        const PLAY2H = this.player2.PLAYH*COEFSEGY;
+        const BALLW = this.ball.BALLW*COEFSEGX;
+        const BALLH = this.ball.BALLH*COEFSEGY;
+
 
         const BALLY = this.ball.startY
         const BALLX = this.ball.startX
         const BALLY2 = BALLY + BALLH
         const BALLX2 = BALLX+ BALLW
-        const VY = this.ball.vx
-        const VX = this.ball.vy
+        const VY = 0// this.ball.vx
+        const VX = 0// this.ball.vy
 
         const PLAY1X = this.player1.x
         const PLAY1Y = this.player1.y
@@ -118,43 +128,48 @@ class Game{
         
         //FRONT BOUNCE
         //PLAYER 1
-        if((BALLY+VY>PLAY1Y)&&(BALLY+VY<PLAY1Y2) && (BALLX2+VX<PLAY1X2) && (BALLX2+VX>PLAY1X)){
+        if((BALLY+VY>=PLAY1Y)&&(BALLY+VY<=PLAY1Y2) && (BALLX2+VX<=PLAY1X2) && (BALLX2+VX>=PLAY1X)){
             this.ball.vx*=-1*power
         }
         //Player 2
-        if((BALLY+VY>PLAY2Y)&&(BALLY+VY<PLAY2Y2) && (BALLX+VX<PLAY2X2) && (BALLX+VX>PLAY2X)){
+        if((BALLY+VY>=PLAY2Y)&&(BALLY+VY<=PLAY2Y2) && (BALLX+VX<=PLAY2X2) && (BALLX+VX>=PLAY2X)){
             this.ball.vx*=-1*power
         }
+        /*
         //BACK BOUNCE
         //PLAYER 1
-        if((BALLY+VY>PLAY1Y)&&(BALLY+VY<PLAY1Y2) && (BALLX+VX<PLAY1X2) && (BALLX+VX>PLAY1X)){
+        if((BALLY+VY>=PLAY1Y)&&(BALLY+VY<=PLAY1Y2) && (BALLX+VX<=PLAY1X2) && (BALLX+VX>=PLAY1X)){
             this.ball.vx*=-1*power
         }
         //Player 2
-        if((BALLY+VY>PLAY2Y)&&(BALLY+VY<PLAY2Y2) && (BALLX2+VX<PLAY2X2) && (BALLX2+VX>PLAY2X)){
+        if((BALLY+VY>=PLAY2Y)&&(BALLY+VY<=PLAY2Y2) && (BALLX2+VX<=PLAY2X2) && (BALLX2+VX>=PLAY2X)){
             this.ball.vx*=-1*power
         }
 
+        
+        
         //TOP BOUNCE
         //PLAYER 1
-        if((BALLY2+VY>PLAY1Y) && (BALLY2+VY<PLAY1Y2) && ((BALLX+VX>PLAY1X && BALLX+VX<PLAY1X2)||(BALLX2+VX>PLAY1X && BALLX2+VX<PLAY1X2))){
+        if((BALLY2+VY>=PLAY1Y) && (BALLY2+VY<=PLAY1Y2) && ((BALLX+VX>=PLAY1X && BALLX+VX<=PLAY1X2)||(BALLX2+VX>=PLAY1X && BALLX2+VX<=PLAY1X2))){
             this.ball.vy*=-1*power
         }
         //PLAYER 2
-        if((BALLY2+VY>PLAY2Y) && (BALLY2+VY<PLAY2Y2) && ((BALLX+VX>PLAY2X && BALLX+VX<PLAY2X2)||(BALLX2+VX>PLAY2X && BALLX2+VX<PLAY2X2))){
-            this.ball.vy*=-1*power
-        }
-
-        //BOTTOM BOUNCE
-        //PLAYER 1
-        if((BALLY+VY<PLAY1Y2) && (BALLY+VY>PLAY1Y) && ((BALLX+VX>PLAY1X && BALLX+VX<PLAY1X2)||(BALLX2+VX>PLAY1X && BALLX2+VX<PLAY1X2))){
-            this.ball.vy*=-1*power
-        }
-        //PLAYER 2
-        if((BALLY+VY<PLAY2Y2) && (BALLY+VY>PLAY2Y) && ((BALLX+VX>PLAY2X && BALLX+VX<PLAY2X2)||(BALLX2+VX>PLAY2X && BALLX2+VX<PLAY2X2))){
+        if((BALLY2+VY>=PLAY2Y) && (BALLY2+VY<=PLAY2Y2) && ((BALLX+VX>=PLAY2X && BALLX+VX<=PLAY2X2)||(BALLX2+VX>=PLAY2X && BALLX2+VX<=PLAY2X2))){
             this.ball.vy*=-1*power
         }
         
+        //BOTTOM BOUNCE
+        //PLAYER 1
+        if((BALLY+VY<=PLAY1Y2) && (BALLY+VY>=PLAY1Y) && ((BALLX+VX>=PLAY1X && BALLX+VX<=PLAY1X2)||(BALLX2+VX>=PLAY1X && BALLX2+VX<=PLAY1X2))){
+            this.ball.vy*=-1*power
+        }
+        //PLAYER 2
+        if((BALLY+VY<=PLAY2Y2) && (BALLY+VY>=PLAY2Y) && ((BALLX+VX>=PLAY2X && BALLX+VX<=PLAY2X2)||(BALLX2+VX>=PLAY2X && BALLX2+VX<=PLAY2X2))){
+            this.ball.vy*=-1*power
+        }
+        
+        */
+    
     }
 
     movingObjects(timestamp){
@@ -165,8 +180,8 @@ class Game{
             })
             if(this.timer < (timestamp-this.speed)){
                 this.timer = timestamp;
-                this.score();
                 this.updateBall()
+                this.score();
             }
             if(this.timer2 < (timestamp-this.speed2)){
                 this.timer2 = timestamp;
@@ -239,11 +254,17 @@ class Game{
         (this.ball.startY+(this.ball.BALLH*0.5))<=EG && (this.ball.startX+this.ball.BALLW*1.5)<=LL2)
         ){
             console.log("Player2 scores!")
+            this.goalSound.play()
             this.score2+=1
             this.ball.vx = 0;
             this.ball.vy = 0;
             this.background.score2 = this.score2;
+            this.context.clearRect(0, 0, this.$canvas.width, this.$canvas.height);
+            this.background.drawBackground();
+            this.ball.drawBall();
+            this.drawPlayers();
             this.background.drawScoreboard()
+            this.background.drawGoal();
             this.goalScored = true;
         }
         //Score for player2: ball should get into right goal.
@@ -253,11 +274,17 @@ class Game{
             (this.ball.startY+(this.ball.BALLH*0.5))<=EG && (this.ball.startX)>=RL2+this.ball.BALLW)
             ){
                 console.log("Player1 scores!")
+                this.goalSound.play()
                 this.score1+=1
                 this.ball.vx = 0;
                 this.ball.vy = 0;
                 this.background.score1 = this.score1;
+                this.context.clearRect(0, 0, this.$canvas.width, this.$canvas.height);
+                this.background.drawBackground();
+                this.ball.drawBall();
+                this.drawPlayers();
                 this.background.drawScoreboard()
+                this.background.drawGoal();
                 this.goalScored = true;
         }
     }
