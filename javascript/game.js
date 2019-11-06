@@ -6,8 +6,8 @@ class Game{
         this.ball = new Ball (this);
         //this.player1 = new Player (this, 0,0,'r')
         //this.player2 = new Player(this,0,0,'l')
-        this.player2 = new Player (this, 920,200,'r')
-        this.player1 = new Player(this,80,200,'l')
+        this.player2 = new Player (this,'r')
+        this.player1 = new Player(this,'l')
         this.players = [this.player1, this.player2]
         this.keyPressed = new Controls(this);
         this.keyPressed.setBindingKeys1();
@@ -34,17 +34,19 @@ class Game{
         this.background.drawBackground();
         this.background.drawScoreboard();
         this.ball.drawBall();
+        this.player1.resetPosition();
+        this.player2.resetPosition();
         this.drawPlayers();
         this.movingObjects(0);
         this.globalSound.play();
+        this.score1 = 0;
+        this.score2 = 0;
     }
 
     reset(){
         this.context.clearRect(0, 0, this.$canvas.width, this.$canvas.height);
-        this.player2.x = 920
-        this.player2.y = 200
-        this.player1.x = 80
-        this.player1.y = 200
+        this.player1.resetPosition();
+        this.player2.resetPosition();
         this.ball.startX = this.$canvas.width/2-8
         this.ball.startY = this.$canvas.height/2-14
         this.ball.vx = 3
@@ -62,15 +64,19 @@ class Game{
     movePlayer2(key){
         switch (key){
             case "left":
+                this.player2.direction = 'left'
                 this.player2.moveLeft();
                 break;
             case "right":
+                this.player2.direction = 'right'
                 this.player2.moveRight();
                 break;
             case "up":
+                this.player2.direction = 'up'
                 this.player2.moveUp();
                 break;
             case "down":
+                this.player2.direction = 'down'
                 this.player2.moveDown();
                 break;
         }
@@ -79,38 +85,42 @@ class Game{
     movePlayer1(key){
         switch (key){
             case "left":
+                this.player1.direction = 'left'
                 this.player1.moveLeft();
                 break;
             case "right":
+                this.player1.direction = 'right'
                 this.player1.moveRight();
                 break;
             case "up":
+                this.player1.direction = 'up'
                 this.player1.moveUp();
                 break;
             case "down":
+                this.player1.direction = 'down'
                 this.player1.moveDown();
                 break;
         }
     }
 
     collision (power){
-        const COEFSEGX = 1.1;
-        const COEFSEGY = 1.1;
+        // const COEFSEGX = 7;
+        // const COEFSEGY = 7;
 
-        const PLAY1W = this.player1.PLAYW*COEFSEGX;
-        const PLAY1H = this.player1.PLAYH*COEFSEGY;
-        const PLAY2W = this.player2.PLAYW*COEFSEGX;
-        const PLAY2H = this.player2.PLAYH*COEFSEGY;
-        const BALLW = this.ball.BALLW*COEFSEGX;
-        const BALLH = this.ball.BALLH*COEFSEGY;
+        const PLAY1W = this.player1.PLAYW//*COEFSEGX;
+        const PLAY1H = this.player1.PLAYH//*COEFSEGY;
+        const PLAY2W = this.player2.PLAYW//*COEFSEGX;
+        const PLAY2H = this.player2.PLAYH//*COEFSEGY;
+        const BALLW = this.ball.BALLW//*COEFSEGX;
+        const BALLH = this.ball.BALLH//*COEFSEGY;
 
 
         const BALLY = this.ball.startY
         const BALLX = this.ball.startX
         const BALLY2 = BALLY + BALLH
         const BALLX2 = BALLX+ BALLW
-        const VY = 0// this.ball.vx
-        const VX = 0// this.ball.vy
+        const VX = this.ball.vx
+        const VY = this.ball.vy
 
         const PLAY1X = this.player1.x
         const PLAY1Y = this.player1.y
@@ -122,8 +132,98 @@ class Game{
         const PLAY2X2 = PLAY2X + PLAY2W
         const PLAY2Y2 = PLAY2Y + PLAY2H
 
+        const D1 = Math.sqrt((this.player1.PCX - (this.ball.BCX+this.ball.vx))**2+(this.player1.PCY - (this.ball.BCY+this.ball.vy))**2)
+        const R1 = this.player1.RADIUS + this.ball.RADIUS
+        const D2 = Math.sqrt((this.player2.PCX - (this.ball.BCX+this.ball.vx))**2+(this.player2.PCY - (this.ball.BCY+this.ball.vy))**2)
+        const R2 = this.player2.RADIUS + this.ball.RADIUS
+
+        //NEW COLLISION METHOD: CIRCLES;
+        //PLAYER 1
+        if(D1<=R1){
+            // console.log("colision P1!")
+            if((BALLY+VY>=PLAY1Y) && (BALLY2+VY<=PLAY1Y2)){
+                console.log("colosigion frente/dorso P1")
+                this.ball.vx*=-1*power
+            }else{
+                this.ball.vx*=-1*power
+                this.ball.vy*=-1*power
+            }
+        }
+        if (D2<=R2){
+            if((BALLY+VY>=PLAY2Y) && (BALLY2+VY<=PLAY2Y2)){
+                console.log("colosigion frente/dorso P2")
+                this.ball.vx*=-1*power
+            }else{
+                this.ball.vx*=-1*power
+                this.ball.vy*=-1*power
+            // console.log("colision P2!")
+            }
+        }
+
+
+
+        
+        /*
         //Math.round((Math.random()*2)*10)/10+1
 
+        //TRY ONE MORE TIME
+        //COLOSION FRONTAL AMBOS JUGADORES
+        //PARTE DE ARRIBA PELOTA ENTRE MAXIMO Y MINIMO DE LOS JUGADORES; JUGADOR1 X + WIDTH = PELOTA X; JUGADOR 2X = PELOTA X+ WIDTH
+        if(
+        (BALLY+VY>=PLAY1Y-COEFSEGY && BALLY+VY<=PLAY1Y2+COEFSEGY && BALLX+VX>=PLAY1X2 && BALLX+VX<=PLAY1X2+COEFSEGX) || ((BALLY2+VY>=PLAY1Y-COEFSEGY && BALLY2+VY<=PLAY1Y2+COEFSEGY) && BALLX+VX>=PLAY1X2 && BALLX+VX<=PLAY1X2+COEFSEGX)
+        ){
+            this.ball.vx*=(-1*power);
+            //console.log("pega adelante jugador 1")
+        }
+        if(
+        (BALLY+VY>=PLAY2Y-COEFSEGY && BALLY+VY<=PLAY2Y2+COEFSEGY && BALLX2+VX<=PLAY2X && BALLX2+VX>=PLAY2X-COEFSEGX) || ((BALLY2+VY>=PLAY2Y-COEFSEGY && BALLY2+VY<=PLAY2Y2+COEFSEGY) && BALLX2+VX<=PLAY2X && BALLX2+VX>=PLAY2X-COEFSEGX)
+        ){
+            this.ball.vx*=(-1*power);
+            //console.log("pega adelante jugador 2")
+        }
+        //COLISION TRASERA AMBOS JUGADORES
+        if(
+        (BALLY+VY>=PLAY1Y-COEFSEGY && BALLY+VY<=PLAY1Y2+COEFSEGY && BALLX2+VX<=PLAY1X && BALLX2+VX>=PLAY1X-COEFSEGX) || ((BALLY2+VY>=PLAY1Y-COEFSEGY && BALLY2+VY<=PLAY1Y2+COEFSEGY) && BALLX2+VX<=PLAY1X && BALLX2+VX>=PLAY1X-COEFSEGX)
+        ){
+            this.ball.vx*=(-1*power);
+            //console.log("pega atras jugador 1")
+        }
+        if(
+        (BALLY+VY>=PLAY2Y-COEFSEGY && BALLY+VY<=PLAY2Y2+COEFSEGY && BALLX+VX>=PLAY2X2 && BALLX+VX<=PLAY2X2+COEFSEGX) || ((BALLY2+VY>=PLAY2Y-COEFSEGY && BALLY2+VY<=PLAY2Y2+COEFSEGY) && BALLX+VX>=PLAY2X2 && BALLX+VX<=PLAY2X2+COEFSEGX)
+        ){
+            this.ball.vx*=(-1*power);
+            //console.log("pega atras jugador 2")
+        }
+
+        //COLISION ARRIBA AMBOS JUGADORES
+        if(
+        ((BALLX+VX>=PLAY1X && BALLX+VX<=PLAY1X2 && BALLY2+VY>=PLAY1Y && BALLY2+VY<=PLAY1Y+COEFSEGY) || (BALLX2+VX>=PLAY1X && BALLX2+VX<=PLAY1X2 && BALLY2+VY>=PLAY1Y && BALLY2+VY<=PLAY1Y+COEFSEGY))
+        ){
+            this.ball.vy*=(-1*power);
+            //console.log("pega arriba jugador 1")
+        }
+        if(
+        ((BALLX+VX>=PLAY2X && BALLX+VX<=PLAY2X2 && BALLY2+VY>=PLAY2Y && BALLY2+VY<=PLAY2Y+COEFSEGY) || (BALLX2+VX>=PLAY2X && BALLX2+VX<=PLAY2X2 && BALLY2+VY>=PLAY2Y && BALLY2+VY<=PLAY2Y+COEFSEGY))
+        ){
+            this.ball.vy*=(-1*power);
+            //console.log("pega arriba jugador 2")
+        }
+        //COLISION ABAJO AMBOS JUGADORES
+        if(
+        ((BALLX+VX>=PLAY1X-COEFSEGX && BALLX+VX<=PLAY1X2+COEFSEGX && BALLY+VY<=PLAY1Y2 && BALLY+VY>=PLAY1Y2-COEFSEGY) || (BALLX2+VX>=PLAY1X-COEFSEGX && BALLX2+VX<=PLAY1X2+COEFSEGX && BALLY+VY>=PLAY1Y2 && BALLY+VY<=PLAY1Y2-COEFSEGY))
+        ){
+            this.ball.vy*=(-1*power);
+            //console.log("pega abajo jugador 1")
+        }
+        if(
+        ((BALLX+VX>=PLAY2X-COEFSEGX && BALLX+VX<=PLAY2X2+COEFSEGX && BALLY+VY<=PLAY2Y2 && BALLY+VY>=PLAY2Y2-COEFSEGY) || (BALLX2+VX>=PLAY2X-COEFSEGX && BALLX2+VX<=PLAY2X2+COEFSEGX && BALLY+VY>=PLAY2Y2 && BALLY+VY<=PLAY2Y2-COEFSEGY))
+        ){
+            this.ball.vy*=(-1*power);
+            //console.log("pega abajo jugador 2")
+        }
+
+
+        
         //SIMPLER
         
         //FRONT BOUNCE
@@ -135,7 +235,7 @@ class Game{
         if((BALLY+VY>=PLAY2Y)&&(BALLY+VY<=PLAY2Y2) && (BALLX+VX<=PLAY2X2) && (BALLX+VX>=PLAY2X)){
             this.ball.vx*=-1*power
         }
-        /*
+        
         //BACK BOUNCE
         //PLAYER 1
         if((BALLY+VY>=PLAY1Y)&&(BALLY+VY<=PLAY1Y2) && (BALLX+VX<=PLAY1X2) && (BALLX+VX>=PLAY1X)){
@@ -173,49 +273,101 @@ class Game{
     }
 
     movingObjects(timestamp){
+        window.requestAnimationFrame(timestamp => {
+            this.movingObjects(timestamp)
+            //this.keyPressed.setReleaseKeys2();
+        })
         if(!this.goalScored){
-            window.requestAnimationFrame(timestamp => {
-                this.movingObjects(timestamp)
-                this.collision(1);
-            })
+            this.player2.runningMotion(timestamp,this.player2.direction);
+            this.player1.runningMotion(timestamp,this.player1.direction)
+            this.collision(1);
             if(this.timer < (timestamp-this.speed)){
-                this.timer = timestamp;
                 this.updateBall()
+                this.timer = timestamp;
+                this.drawEverything()
                 this.score();
             }
             if(this.timer2 < (timestamp-this.speed2)){
                 this.timer2 = timestamp;
-                if(Math.round(Math.random()+1)===1){
-                    console.log("acelera x")
+                if(Math.round(Math.random()+1)===1 ){
+                    //console.log("acelera x")
                     this.ball.vx*=1.15;
                 }else{
-                    console.log("acelera y")
+                    //console.log("acelera y")
                     this.ball.vy*=1.15;
                 }
 
             }
+            
         }else{
-            console.log(this.score1, this.score2)
+            if(this.player1.scored && this.score1 === 5){
+                this.player1.celeberationMotion(timestamp);
+                this.player2.otherTeamGoal();
+                this.drawEverything()
+                this.background.drawWinner(this.player1.side)
+            }else if(this.player1.scored){
+                this.player1.celeberationMotion(timestamp);
+                this.player2.otherTeamGoal();
+                this.drawEverything()
+                this.background.drawGoal();
+            }
+            if(this.player2.scored && this.score2 === 5){
+                this.player2.celeberationMotion(timestamp);
+                this.player1.otherTeamGoal();
+                this.drawEverything()
+                this.background.drawWinner(this.player2.side)
+            } else if(this.player2.scored){
+                this.player2.celeberationMotion(timestamp);
+                this.player1.otherTeamGoal();
+                this.drawEverything()
+                this.background.drawGoal();
+            }
         }
+    }
+
+    drawEverything(){
+        this.context.clearRect(0, 0, this.$canvas.width, this.$canvas.height);
+        this.background.drawBackground();
+        this.background.drawScoreboard();
+        this.ball.drawBall();
+        this.drawPlayers();
     }
 
     updateBall(){
         //console.dir(this.context)
-        const TL = 75
-        const DL = this.$canvas.height-52
+        const TL = 76
+        const DL = this.$canvas.height-54
         const LL1 = 92
         const LL2 = 70
         const RL1 = this.$canvas.width-86
         const RL2 = this.$canvas.width-66
         const SG = 181
         const EG = 277
-        this.context.clearRect(0, 0, this.$canvas.width, this.$canvas.height);
         this.ball.startX += this.ball.vx
         this.ball.startY += this.ball.vy
         //Condition for top and bottom bounce
+        if((this.ball.BCY+this.ball.RADIUS+this.ball.vy>=DL) || (this.ball.BCY-this.ball.RADIUS+this.ball.vy<=TL)){
+            console.log("ei, deberia rebotar...")
+            this.ball.vy*=-1
+        }
+        if(
+            //Condition for left bounce
+            (this.ball.BCY-this.ball.RADIUS+this.ball.vy>=TL && this.ball.BCY+this.ball.vy<SG && this.ball.BCX-this.ball.RADIUS+this.ball.vx<=LL1)
+            ||
+            (this.ball.BCY+this.ball.vy>EG && this.ball.BCY+this.ball.RADIUS+this.ball.vy<=DL && this.ball.BCX-this.ball.RADIUS+this.ball.vx<=LL2)
+            ||//Condition for right bounce
+            (this.ball.BCY-this.ball.RADIUS+this.ball.vy>=TL && this.ball.BCY+this.ball.vy<SG && this.ball.BCX+this.ball.RADIUS+this.ball.vx>=RL1)
+            ||
+            (this.ball.BCY+this.ball.vy>EG && this.ball.BCY+this.ball.RADIUS+this.ball.vy<=DL && this.ball.BCX+this.ball.RADIUS+this.ball.vx>=RL2)
+            ){
+                this.ball.vx*=-1
+            }
+        /*
         if((this.ball.startY+this.ball.BALLH)>=DL || this.ball.startY<=TL){
             this.ball.vy*=-1
         }
+        */
+        /*
         if( //Condition for left bounce;
             ((this.ball.startY>=TL && (this.ball.startY+(this.ball.BALLH*0.5))<SG && this.ball.startX<LL1)
             ||
@@ -227,10 +379,7 @@ class Game{
         ){
             this.ball.vx*=-1
         }
-        this.background.drawBackground();
-        this.background.drawScoreboard();
-        this.ball.drawBall();
-        this.drawPlayers();
+        */
     }
 
     drawPlayers(){
@@ -247,45 +396,34 @@ class Game{
         const RL2 = this.$canvas.width-66
         const SG = 181
         const EG = 277
-        //Score for player1: ball should get into left goal.
+        //Score for player2: ball should get into left goal.
         if(
         ((this.ball.startY+(this.ball.BALLH*0.5)>=SG && (this.ball.startX+this.ball.BALLW*1.5)<=LL1)
         ||
         (this.ball.startY+(this.ball.BALLH*0.5))<=EG && (this.ball.startX+this.ball.BALLW*1.5)<=LL2)
         ){
-            console.log("Player2 scores!")
-            this.goalSound.play()
-            this.score2+=1
-            this.ball.vx = 0;
-            this.ball.vy = 0;
-            this.background.score2 = this.score2;
-            this.context.clearRect(0, 0, this.$canvas.width, this.$canvas.height);
-            this.background.drawBackground();
-            this.ball.drawBall();
-            this.drawPlayers();
-            this.background.drawScoreboard()
-            this.background.drawGoal();
-            this.goalScored = true;
-        }
-        //Score for player2: ball should get into right goal.
+            //console.log("Player2 scores!")
+                this.goalSound.play()
+                this.score2+=1
+                this.ball.vx = 0;
+                this.ball.vy = 0;
+                this.background.score2 = this.score2;
+                this.goalScored = true;
+                this.player2.scored = true;
+            }
+        //Score for player1: ball should get into right goal.
         if(
             ((this.ball.startY+(this.ball.BALLH*0.5)>=SG && (this.ball.startX)>=RL1+this.ball.BALLW)
             ||
             (this.ball.startY+(this.ball.BALLH*0.5))<=EG && (this.ball.startX)>=RL2+this.ball.BALLW)
             ){
-                console.log("Player1 scores!")
                 this.goalSound.play()
                 this.score1+=1
                 this.ball.vx = 0;
                 this.ball.vy = 0;
                 this.background.score1 = this.score1;
-                this.context.clearRect(0, 0, this.$canvas.width, this.$canvas.height);
-                this.background.drawBackground();
-                this.ball.drawBall();
-                this.drawPlayers();
-                this.background.drawScoreboard()
-                this.background.drawGoal();
                 this.goalScored = true;
+                this.player1.scored = true;
         }
     }
 

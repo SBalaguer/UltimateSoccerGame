@@ -5,16 +5,24 @@ class Background{
         this.col = this.canvasWidth / 100;
         this.row = this.canvasHeight / 100;
         this.image = new Image ();
-        this.image.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/images/sprite-inicial.png"
+        this.image.src = "../images/sprite-inicial.png"
+        // this.image.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/images/sprite-inicial.png"
         this.goalImage = new Image ();
-        this.goalImage.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/images/goal.png"
+        this.goalImage.src = "../images/goal.png"
+        // this.goalImage.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/images/goal.png"
+        this.win1Image = new Image();
+        this.win1Image.src = "../images/player1-wins.png"
+        // this.win1Image.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/images/player1-wins.png"
+        this.win2Image = new Image();
+        this.win2Image.src = "../images/player2-wins.png"
+        // this.win2Image.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/images/player2-wins.png"
         this.score1 = 0
         this.score2 = 0
     }
     
     drawGoal(){
-        console.log("drawing goal sign!")
-        game.context.drawImage(this.goalImage,0,19,215,60,250,170, 530, 120)
+        //console.log("drawing goal sign!")
+        game.context.drawImage(this.goalImage,0,19,215,60,310,170, 430, 120)
     }
     
     drawScoreboard(){
@@ -37,6 +45,14 @@ class Background{
         game.context.fillText("ESTADIO NUEVO GASOMETRO", 750, 30);
     }
 
+    drawWinner(side){
+        if(side ==='l'){
+            game.context.drawImage(this.win1Image,4,19,265,141,245,100, 524, 282)
+        }else{
+            game.context.drawImage(this.win2Image,2,19,280,145,245,100, 524, 282)
+        }
+    }
+
     drawBackground(){
         //console.log('el click llega hasta aca')
         //const SCOREBOARD = 3/32
@@ -47,9 +63,6 @@ class Background{
         game.context.drawImage(this.image,16,509,509,208,0,55, 1018, 416)
         game.context.drawImage(this.image,429,156,114,8,1018-114,55+416-8, 114, 8)
 
-
-
-        
         /*
         //Check each corner.
         game.context.fillStyle= "#FFF"

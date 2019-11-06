@@ -63,6 +63,37 @@ class Controls {
         });    
     }
 
+    /*setReleaseKeys2(){
+        window.addEventListener('keyup', (event) => {
+            let key;
+            // React based on the key pressed
+            switch (event.keyCode) {
+                case 38:
+                    console.log('solte up')
+                    // key = 'up'
+                    break;
+                case 37:
+                    console.log('solte left')
+                    // key = 'left'
+                    break;
+                case 39:
+                   console.log('solte right')
+                    // key = 'right'
+                    break;
+                case 40:
+                   console.log('solte down')
+                    // key = 'down'
+                    break;
+            }
+            // if (key){
+                // Stop the default behavior (moving the screen to the left/up/right/down)
+                // event.preventDefault();
+                // this.game.movePlayer2(key);
+            // }
+        });    
+    }
+    */
+
 
 
 }
