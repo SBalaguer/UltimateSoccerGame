@@ -24,11 +24,13 @@ class Game{
         this.score2 = 0;
         this.goalScored = false;
         this.globalSound = new Audio();
-        this.globalSound.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/sfx/MainAudio-cut.wav"
+        this.globalSound.src = "./SFX/MainAudio-cut.wav"
+        //this.globalSound.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/sfx/MainAudio-cut.wav"
         this.globalSound.volume = 0.2
         this.globalSound.loop = true;
         this.goalSound = new Audio();
-        this.goalSound.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/sfx/goal.wav"
+        this.goalSound.src = "./SFX/goal.wav"
+        //this.goalSound.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/sfx/goal.wav"
         this.goalSound.volume = 1
         this.minAngle = 1.4;
         this.maxAngle = 0.8;
@@ -56,7 +58,7 @@ class Game{
         this.background.drawScoreboard();
         this.ball.drawBall();
         this.drawPlayers();
-        if (this.obstacles.obstacleExists){
+        if (this.obstacles.obstacleExists && !this.obstacles.obstacleEffect){
             this.obstacles.drawObstacle()
         }
     }
@@ -77,6 +79,8 @@ class Game{
         this.ball.drawBall();
         this.drawPlayers();
         this.movingObjects(0);
+        this.obstacles.obstacleEffect = false;
+        this.obstacles.obstacleExists = false;
     }
 
     movingObjects(timestamp){
@@ -88,7 +92,10 @@ class Game{
             this.player2.runningMotion(timestamp,this.player2.direction);
             this.player1.runningMotion(timestamp,this.player1.direction)
             this.collision(1);
-            this.collisionObstacles();
+            if (this.obstacles.obstacleExists && !this.obstacles.obstacleEffect){
+                this.collisionObstacles();
+            }
+            this.resetCollisionObstacles();
             this.score();
             if(this.timer < (timestamp-this.speed)){
                 this.updateBall()
@@ -106,7 +113,7 @@ class Game{
                 }
             if(this.obstacleTimer < (timestamp-this.obstacleSpeed)){
                 this.obstacleTimer = timestamp;
-                this.obstacles.obstacleCreation(this.obstacles.obstacleExists);
+                this.obstacles.obstacleCreation(this.obstacles.obstacleExists, this.obstacles.obstacleEffect);
                 this.obstacles.obstacleExists = true;
             }
                 /*
@@ -152,6 +159,9 @@ class Game{
                 this.drawEverything()
                 this.background.drawGoal();
             }
+            this.timer1 = timestamp;
+            this.timer2 = timestamp;
+            this.obstacleTimer = timestamp;
         }
     }
 
@@ -243,7 +253,9 @@ class Game{
                 this.ball.vy*=-1*power
             }
             this.player1.playerKicked = true;
-            console.log(this.player1.playerKicked)
+            this.player2.playerKicked = false;
+            this.player1.kickCount+=1
+            console.log(this.player1.playerKicked, this.player1.kickCount)
         }
         if (D2<=R2){
             if((BALLY+VY>=PLAY2Y) && (BALLY2+VY<=PLAY2Y2)){
@@ -255,118 +267,11 @@ class Game{
             // console.log("colision P2!")
             }
             this.player2.playerKicked = true;
-            console.log(this.player2.playerKicked)
+            this.player1.playerKicked = false;
+            this.player2.kickCount+=1
+            console.log(this.player2.playerKicked, this.player2.kickCount)
         }
 
-
-
-        
-        /*
-        //Math.round((Math.random()*2)*10)/10+1
-
-        //TRY ONE MORE TIME
-        //COLOSION FRONTAL AMBOS JUGADORES
-        //PARTE DE ARRIBA PELOTA ENTRE MAXIMO Y MINIMO DE LOS JUGADORES; JUGADOR1 X + WIDTH = PELOTA X; JUGADOR 2X = PELOTA X+ WIDTH
-        if(
-        (BALLY+VY>=PLAY1Y-COEFSEGY && BALLY+VY<=PLAY1Y2+COEFSEGY && BALLX+VX>=PLAY1X2 && BALLX+VX<=PLAY1X2+COEFSEGX) || ((BALLY2+VY>=PLAY1Y-COEFSEGY && BALLY2+VY<=PLAY1Y2+COEFSEGY) && BALLX+VX>=PLAY1X2 && BALLX+VX<=PLAY1X2+COEFSEGX)
-        ){
-            this.ball.vx*=(-1*power);
-            //console.log("pega adelante jugador 1")
-        }
-        if(
-        (BALLY+VY>=PLAY2Y-COEFSEGY && BALLY+VY<=PLAY2Y2+COEFSEGY && BALLX2+VX<=PLAY2X && BALLX2+VX>=PLAY2X-COEFSEGX) || ((BALLY2+VY>=PLAY2Y-COEFSEGY && BALLY2+VY<=PLAY2Y2+COEFSEGY) && BALLX2+VX<=PLAY2X && BALLX2+VX>=PLAY2X-COEFSEGX)
-        ){
-            this.ball.vx*=(-1*power);
-            //console.log("pega adelante jugador 2")
-        }
-        //COLISION TRASERA AMBOS JUGADORES
-        if(
-        (BALLY+VY>=PLAY1Y-COEFSEGY && BALLY+VY<=PLAY1Y2+COEFSEGY && BALLX2+VX<=PLAY1X && BALLX2+VX>=PLAY1X-COEFSEGX) || ((BALLY2+VY>=PLAY1Y-COEFSEGY && BALLY2+VY<=PLAY1Y2+COEFSEGY) && BALLX2+VX<=PLAY1X && BALLX2+VX>=PLAY1X-COEFSEGX)
-        ){
-            this.ball.vx*=(-1*power);
-            //console.log("pega atras jugador 1")
-        }
-        if(
-        (BALLY+VY>=PLAY2Y-COEFSEGY && BALLY+VY<=PLAY2Y2+COEFSEGY && BALLX+VX>=PLAY2X2 && BALLX+VX<=PLAY2X2+COEFSEGX) || ((BALLY2+VY>=PLAY2Y-COEFSEGY && BALLY2+VY<=PLAY2Y2+COEFSEGY) && BALLX+VX>=PLAY2X2 && BALLX+VX<=PLAY2X2+COEFSEGX)
-        ){
-            this.ball.vx*=(-1*power);
-            //console.log("pega atras jugador 2")
-        }
-
-        //COLISION ARRIBA AMBOS JUGADORES
-        if(
-        ((BALLX+VX>=PLAY1X && BALLX+VX<=PLAY1X2 && BALLY2+VY>=PLAY1Y && BALLY2+VY<=PLAY1Y+COEFSEGY) || (BALLX2+VX>=PLAY1X && BALLX2+VX<=PLAY1X2 && BALLY2+VY>=PLAY1Y && BALLY2+VY<=PLAY1Y+COEFSEGY))
-        ){
-            this.ball.vy*=(-1*power);
-            //console.log("pega arriba jugador 1")
-        }
-        if(
-        ((BALLX+VX>=PLAY2X && BALLX+VX<=PLAY2X2 && BALLY2+VY>=PLAY2Y && BALLY2+VY<=PLAY2Y+COEFSEGY) || (BALLX2+VX>=PLAY2X && BALLX2+VX<=PLAY2X2 && BALLY2+VY>=PLAY2Y && BALLY2+VY<=PLAY2Y+COEFSEGY))
-        ){
-            this.ball.vy*=(-1*power);
-            //console.log("pega arriba jugador 2")
-        }
-        //COLISION ABAJO AMBOS JUGADORES
-        if(
-        ((BALLX+VX>=PLAY1X-COEFSEGX && BALLX+VX<=PLAY1X2+COEFSEGX && BALLY+VY<=PLAY1Y2 && BALLY+VY>=PLAY1Y2-COEFSEGY) || (BALLX2+VX>=PLAY1X-COEFSEGX && BALLX2+VX<=PLAY1X2+COEFSEGX && BALLY+VY>=PLAY1Y2 && BALLY+VY<=PLAY1Y2-COEFSEGY))
-        ){
-            this.ball.vy*=(-1*power);
-            //console.log("pega abajo jugador 1")
-        }
-        if(
-        ((BALLX+VX>=PLAY2X-COEFSEGX && BALLX+VX<=PLAY2X2+COEFSEGX && BALLY+VY<=PLAY2Y2 && BALLY+VY>=PLAY2Y2-COEFSEGY) || (BALLX2+VX>=PLAY2X-COEFSEGX && BALLX2+VX<=PLAY2X2+COEFSEGX && BALLY+VY>=PLAY2Y2 && BALLY+VY<=PLAY2Y2-COEFSEGY))
-        ){
-            this.ball.vy*=(-1*power);
-            //console.log("pega abajo jugador 2")
-        }
-
-
-        
-        //SIMPLER
-        
-        //FRONT BOUNCE
-        //PLAYER 1
-        if((BALLY+VY>=PLAY1Y)&&(BALLY+VY<=PLAY1Y2) && (BALLX2+VX<=PLAY1X2) && (BALLX2+VX>=PLAY1X)){
-            this.ball.vx*=-1*power
-        }
-        //Player 2
-        if((BALLY+VY>=PLAY2Y)&&(BALLY+VY<=PLAY2Y2) && (BALLX+VX<=PLAY2X2) && (BALLX+VX>=PLAY2X)){
-            this.ball.vx*=-1*power
-        }
-        
-        //BACK BOUNCE
-        //PLAYER 1
-        if((BALLY+VY>=PLAY1Y)&&(BALLY+VY<=PLAY1Y2) && (BALLX+VX<=PLAY1X2) && (BALLX+VX>=PLAY1X)){
-            this.ball.vx*=-1*power
-        }
-        //Player 2
-        if((BALLY+VY>=PLAY2Y)&&(BALLY+VY<=PLAY2Y2) && (BALLX2+VX<=PLAY2X2) && (BALLX2+VX>=PLAY2X)){
-            this.ball.vx*=-1*power
-        }
-
-        
-        
-        //TOP BOUNCE
-        //PLAYER 1
-        if((BALLY2+VY>=PLAY1Y) && (BALLY2+VY<=PLAY1Y2) && ((BALLX+VX>=PLAY1X && BALLX+VX<=PLAY1X2)||(BALLX2+VX>=PLAY1X && BALLX2+VX<=PLAY1X2))){
-            this.ball.vy*=-1*power
-        }
-        //PLAYER 2
-        if((BALLY2+VY>=PLAY2Y) && (BALLY2+VY<=PLAY2Y2) && ((BALLX+VX>=PLAY2X && BALLX+VX<=PLAY2X2)||(BALLX2+VX>=PLAY2X && BALLX2+VX<=PLAY2X2))){
-            this.ball.vy*=-1*power
-        }
-        
-        //BOTTOM BOUNCE
-        //PLAYER 1
-        if((BALLY+VY<=PLAY1Y2) && (BALLY+VY>=PLAY1Y) && ((BALLX+VX>=PLAY1X && BALLX+VX<=PLAY1X2)||(BALLX2+VX>=PLAY1X && BALLX2+VX<=PLAY1X2))){
-            this.ball.vy*=-1*power
-        }
-        //PLAYER 2
-        if((BALLY+VY<=PLAY2Y2) && (BALLY+VY>=PLAY2Y) && ((BALLX+VX>=PLAY2X && BALLX+VX<=PLAY2X2)||(BALLX2+VX>=PLAY2X && BALLX2+VX<=PLAY2X2))){
-            this.ball.vy*=-1*power
-        }
-        
-        */
     
     }
 
@@ -394,7 +299,7 @@ class Game{
             (this.ball.BCY+this.ball.vy>EG && this.ball.BCY+this.ball.RADIUS+this.ball.vy<=DL && this.ball.BCX-this.ball.RADIUS+this.ball.vx<=LL2)
         ){
             this.ball.vx*=-1
-            this.player1.playerKicked = false;
+            this.player2.playerKicked = false;
         } 
         if(
             //Condition for right bounce
@@ -403,26 +308,9 @@ class Game{
             (this.ball.BCY+this.ball.vy>EG && this.ball.BCY+this.ball.RADIUS+this.ball.vy<=DL && this.ball.BCX+this.ball.RADIUS+this.ball.vx>=RL2)
             ){
                 this.ball.vx*=-1
-                this.player2.playerKicked = false;
+                this.player1.playerKicked = false;
             }
-        /*
-        if((this.ball.startY+this.ball.BALLH)>=DL || this.ball.startY<=TL){
-            this.ball.vy*=-1
-        }
-        */
-        /*
-        if( //Condition for left bounce;
-            ((this.ball.startY>=TL && (this.ball.startY+(this.ball.BALLH*0.5))<SG && this.ball.startX<LL1)
-            ||
-            (this.ball.startY+this.ball.BALLH<=DL && (this.ball.startY+(this.ball.BALLH*0.5))>EG && this.ball.startX<LL2))
-            || //Condition for right bounce
-            ((this.ball.startY>=TL && (this.ball.startY+(this.ball.BALLH*0.5))<SG && this.ball.startX+this.ball.BALLW>=RL1)
-            ||
-            (this.ball.startY+this.ball.BALLH<=DL && (this.ball.startY+(this.ball.BALLH*0.5))>EG && this.ball.startX+this.ball.BALLW>=RL2))
-        ){
-            this.ball.vx*=-1
-        }
-        */
+
     }
     
     score(){
@@ -509,13 +397,28 @@ class Game{
             if (this.ball.vx>0 && this.player1.playerKicked){
                 console.log("ball colided with obstacle kicked by player 1")
                 this.obstacles.obstacleExists = false;
+                this.obstacles.obstacleEffect = true;
+                this.player1.PLAYH *= this.obstacles.currentObstacle[0]
+                this.player1.kickCount = 0
+                this.player2.kickCount = 0
             } else if(this.ball.vx<0 && this.player2.playerKicked){
                 console.log("ball colided with obstacle kicked by player 2")
                 this.obstacles.obstacleExists = false;
+                this.obstacles.obstacleEffect = true;
+                this.player2.PLAYH *= this.obstacles.currentObstacle[0]
+                this.player1.kickCount = 0
+                this.player2.kickCount = 0
             }
         }
-
-
     }
+    resetCollisionObstacles(){
+
+        if(this.player1.kickCount === 3 || this.player2.kickCount === 3){
+            this.player1.PLAYH = 53
+            this.player2.PLAYH = 53
+            this.obstacles.obstacleEffect = false;
+        }
+        console.log(this.obstacles.obstacleEffect)
+        }
 
 }

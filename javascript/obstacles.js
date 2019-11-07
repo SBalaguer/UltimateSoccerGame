@@ -5,7 +5,7 @@ class Obstacles{
         this.canvasHeight = game.$canvas.height;
         this.x = this.canvasWidth / 2
         this.y = this.canvasHeight/2-14
-        this.radius = 20
+        this.radius = 100
         this.vy = 4
         this.TL = 78
         this.DL = this.canvasHeight-100
@@ -13,6 +13,7 @@ class Obstacles{
         this.obstacles=[[2],[0.5]]
         this.currentObstacle = []
         this.obstacleExists = false;
+        this.obstacleEffect = false;
     }
 
     drawObstacle(){
@@ -30,11 +31,11 @@ class Obstacles{
         }
     }
 
-    obstacleCreation(obstacleExists){
+    obstacleCreation(obstacleExists, obstacleEffect){
         for (let i=0; i<this.obstacles.length;i++){
-            if(!obstacleExists){
+            if(!obstacleExists && !obstacleEffect){
                 this.drawObstacle()
-                this.currentObstacle = this.obstacles[0];
+                this.currentObstacle = this.obstacles[1];
             }
         }
     }

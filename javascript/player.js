@@ -4,13 +4,13 @@ class Player{
         this.height = game.$canvas.height;
         this.image = new Image();
         //this.image.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/images/sprite-santi.png"
-        this.image.src = "../images/sprite-santi.png"
+        this.image.src = "./images/sprite-santi.png"
         this.op = new Image ();
         //this.op.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/images/orange-player.png"
-        this.op.src = "../images/orange-player.png"
+        this.op.src = "./images/orange-player.png"
         this.bp = new Image ();
         //this.bp.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/images/blue-player-2.png"
-        this.bp.src = "../images/blue-player-2.png"
+        this.bp.src = "./images/blue-player-2.png"
         this.moveSpeed = 15
         this.PLAYW = 30
         this.PLAYH = 53
@@ -44,6 +44,7 @@ class Player{
         this.count = 0
         this.scored = false;
         this.playerKicked = false;
+        this.kickCount = 0;
     }
 
     resetPosition(){
@@ -72,6 +73,8 @@ class Player{
         this.count = 0;
         this.scored = false;
         this.direction = ''
+        this.playerKicked = false;
+        this.kickCount = 0;
     }
 
     drawPlayer(){

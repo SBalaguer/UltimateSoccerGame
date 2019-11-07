@@ -3,7 +3,7 @@ class Ball {
         this.canvasWidth = game.$canvas.width;
         this.canvasHeight = game.$canvas.height;
         this.ball = new Image ();
-        this.ball.src = "../images/SoccerBall.png"
+        this.ball.src = "./images/SoccerBall.png"
         //this.ball.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/images/SoccerBall.png"
         this.startX = this.canvasWidth/2-8
         this.startY = this.canvasHeight/2-14
