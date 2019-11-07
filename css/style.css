@@ -46,7 +46,11 @@ canvas{
 }
 
 #reglas-play{
-    padding-top: 3.5em;
+    /*padding-top: 3.5em;*/
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 #reglas-play h2{
@@ -68,5 +72,16 @@ canvas{
     padding-bottom: 0.2em;
     border-bottom: solid 0.1em #E26600;
     
+}
+
+#boton-inicial{
+    display: inline;
+    cursor: pointer;
+    border: 3.5px solid blue;
+    border-radius: 4px;
+    padding: 10px;
+    align-items: center;
+    font-size: 2em;
+
 }
 
