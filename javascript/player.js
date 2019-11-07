@@ -43,6 +43,7 @@ class Player{
         this.timer = 0;
         this.count = 0
         this.scored = false;
+        this.playerKicked = false;
     }
 
     resetPosition(){
@@ -54,6 +55,8 @@ class Player{
             this.yImg = this.moveRightArr[0][1]
             this.xImgL = this.moveRightArr[0][2]
             this.yImgL = this.moveRightArr[0][3]
+            this.PLAYW = 30
+            this.PLAYH = 53
         }else{
             this.x = 920
             this.y = 200
@@ -62,6 +65,8 @@ class Player{
             this.yImg = this.moveLeftArr[0][1]
             this.xImgL = this.moveLeftArr[0][2]
             this.yImgL = this.moveLeftArr[0][3]
+            this.PLAYW = 30
+            this.PLAYH = 53
         }
         this.timer = 0;
         this.count = 0;
