@@ -28,9 +28,16 @@ class Game{
         //this.globalSound.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/sfx/MainAudio-cut.wav"
         this.globalSound.volume = 0.2
         this.globalSound.loop = true;
+        this.gameMusic = new Audio();
+        this.gameMusic.src = "./SFX/game-music.wav"
+        this.gameMusic.volume = 0.6
+        this.gameMusic.loop = true;
         this.goalSound = new Audio();
         this.goalSound.src = "./SFX/goal.wav"
         //this.goalSound.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/sfx/goal.wav"
+        this.goalSound.volume = 0.8
+        this.whistle = new Audio();
+        this.whistle.src = "./SFX/whistle.wav"
         this.goalSound.volume = 1
         this.minAngle = 1.4;
         this.maxAngle = 0.8;
@@ -47,7 +54,9 @@ class Game{
         this.player2.resetPosition();
         this.drawPlayers();
         this.movingObjects(0);
-        this.globalSound.play();
+        this.whistle.play();
+        //this.globalSound.play();
+        this.gameMusic.play();
         this.score1 = 0;
         this.score2 = 0;
         //this.obstacles.obstacleBuilder();
@@ -62,6 +71,7 @@ class Game{
         if (this.obstacles.obstacleExists && !this.obstacles.obstacleEffect){
             this.obstacles.drawObstacle()
         }
+        this.background.drawArcos();
     }
 
     reset(){
@@ -70,10 +80,9 @@ class Game{
         this.player2.resetPosition();
         this.ball.startX = this.$canvas.width/2-8
         this.ball.startY = this.$canvas.height/2-14
-        this.ball.vx = 3.5
-        this.ball.vy = 3.5
+        this.ball.vx = 5
+        this.ball.vy = 3
         this.goalScored = false;
-        this.timer = 0;
         this.speed = 1;
         this.background.drawBackground();
         this.background.drawScoreboard();
@@ -82,25 +91,28 @@ class Game{
         this.movingObjects(0);
         this.obstacles.obstacleEffect = false;
         this.obstacles.obstacleExists = false;
+        this.whistle.play();
     }
 
     movingObjects(timestamp){
+        //console.log("moving Objects is working")
         window.requestAnimationFrame(timestamp => {
             this.movingObjects(timestamp)
             //this.keyPressed.setReleaseKeys2();
         })
         if(!this.goalScored){
-            this.player2.runningMotion(timestamp,this.player2.direction);
-            this.player1.runningMotion(timestamp,this.player1.direction)
-            this.collision(1);
-            this.collisionObstacles();
-            this.resetCollisionObstacles();
-            this.score();
             if(this.timer < (timestamp-this.speed)){
-                this.updateBall()
+                this.player2.runningMotion(timestamp,this.player2.direction);
+                this.player1.runningMotion(timestamp,this.player1.direction)
+                this.checkBallCollision(); //checks collision against walls
+                this.collision(1); //checks collision agains players
+                this.updateBall() // 
+                this.score(); //checks if there was a goal
+                this.collisionObstacles();    
                 this.timer = timestamp;
-                this.drawEverything()
+                this.resetCollisionObstacles();
                 this.obstacles.obstacleMove();
+                this.drawEverything()
             }
             if(this.timer2 < (timestamp-this.speed2)){
                 this.timer2 = timestamp;
@@ -120,24 +132,6 @@ class Game{
                 this.player1.playerKicked = false;
                 this.obstacles.obstacleExists = true;
             }
-                /*
-                if(Math.round(Math.random()+1)===1 ){
-                    //console.log("acelera x")
-                    if(Math.abs(this.ball.vRatio)<=this.minAngle){
-                        this.ball.vx*=this.gameAccel;
-                    }else{
-                        this.ball.vy*=this.gameAcel;
-                    }
-                }else{
-                    //console.log("acelera y")
-                    if(Math.abs(this.ball.vRatio)>=this.maxAngle){
-                        this.ball.vy*=this.gameAccel;
-                    }else{
-                        this.ball.vx*=this.gameAcel;
-                    }
-                }
-                */
-
             }
             
         }else{
@@ -163,10 +157,12 @@ class Game{
                 this.drawEverything()
                 this.background.drawGoal();
             }
-            this.timer1 = timestamp;
+            this.timer = timestamp;
             this.timer2 = timestamp;
             this.obstacleTimer = timestamp;
+            this.obstacles.obstacleExists = false;
         }
+
     }
 
     movePlayer2(key){
@@ -214,6 +210,7 @@ class Game{
     collision (power){
         // const COEFSEGX = 7;
         // const COEFSEGY = 7;
+        const COEFSEG = 10
 
         const PLAY1W = this.player1.PLAYW//*COEFSEGX;
         const PLAY1H = this.player1.PLAYH//*COEFSEGY;
@@ -241,9 +238,9 @@ class Game{
         const PLAY2Y2 = PLAY2Y + PLAY2H
 
         const D1 = Math.sqrt((this.player1.PCX - (this.ball.BCX+this.ball.vx))**2+(this.player1.PCY - (this.ball.BCY+this.ball.vy))**2)
-        const R1 = this.player1.RADIUS + this.ball.RADIUS
+        const R1 = this.player1.RADIUS + this.ball.RADIUS + COEFSEG
         const D2 = Math.sqrt((this.player2.PCX - (this.ball.BCX+this.ball.vx))**2+(this.player2.PCY - (this.ball.BCY+this.ball.vy))**2)
-        const R2 = this.player2.RADIUS + this.ball.RADIUS
+        const R2 = this.player2.RADIUS + this.ball.RADIUS + COEFSEG
 
         //NEW COLLISION METHOD: CIRCLES;
         //PLAYER 1
@@ -253,33 +250,38 @@ class Game{
                 //console.log("colosigion frente/dorso P1")
                 this.ball.vx*=-1*power
             }else{
-                //this.ball.vx*=-1*power
+                this.ball.vx*=-1*power
                 this.ball.vy*=-1*power
             }
             this.player1.playerKicked = true;
             this.player2.playerKicked = false;
             this.player1.kickCount+=1
-            console.log(this.player1.playerKicked, this.player1.kickCount)
+            //console.log(this.player1.playerKicked, this.player1.kickCount)
         }
         if (D2<=R2){
             if((BALLY+VY>=PLAY2Y) && (BALLY2+VY<=PLAY2Y2)){
                 //console.log("colosigion frente/dorso P2")
                 this.ball.vx*=-1*power
             }else{
-                //this.ball.vx*=-1*power
+                this.ball.vx*=-1*power
                 this.ball.vy*=-1*power
             // console.log("colision P2!")
             }
             this.player2.playerKicked = true;
             this.player1.playerKicked = false;
             this.player2.kickCount+=1
-            console.log(this.player2.playerKicked, this.player2.kickCount)
+            //console.log(this.player2.playerKicked, this.player2.kickCount)
         }
 
     
     }
 
     updateBall(){
+        this.ball.startX += this.ball.vx
+        this.ball.startY += this.ball.vy
+    }
+
+    checkBallCollision(){
         //console.dir(this.context)
         const TL = 76
         const DL = this.$canvas.height-54
@@ -289,8 +291,6 @@ class Game{
         const RL2 = this.$canvas.width-66
         const SG = 181
         const EG = 277
-        this.ball.startX += this.ball.vx
-        this.ball.startY += this.ball.vy
         //Condition for top and bottom bounce
         if((this.ball.BCY+this.ball.RADIUS+this.ball.vy>=DL) || (this.ball.BCY-this.ball.RADIUS+this.ball.vy<=TL)){
             //console.log("ei, deberia rebotar...")
@@ -326,6 +326,7 @@ class Game{
         const RL2 = this.$canvas.width-66
         const SG = 181
         const EG = 277
+        const GS = 30
         if( 
             //Player 2 Scores
             (this.ball.BCY+this.ball.vy>=SG && this.ball.BCY+this.ball.vy<=EG && this.ball.BCX+this.ball.RADIUS-this.ball.vx<=LL1)
@@ -342,9 +343,9 @@ class Game{
             }
         if(
             //Player 1 Scores;
-            (this.ball.BCY+this.ball.vy>=SG && this.ball.BCY+this.ball.vy<=EG && this.ball.BCX-this.ball.RADIUS+this.ball.vx>=RL1)
+            (this.ball.BCY+this.ball.vy>=SG && this.ball.BCY+this.ball.vy<=EG && this.ball.BCX-this.ball.RADIUS+this.ball.vx>=RL1+GS)
             ||
-            (this.ball.BCY+this.ball.vy>=SG && this.ball.BCY+this.ball.vy<=EG && this.ball.BCX-this.ball.RADIUS+this.ball.vx>=RL2)  
+            (this.ball.BCY+this.ball.vy>=SG && this.ball.BCY+this.ball.vy<=EG && this.ball.BCX-this.ball.RADIUS+this.ball.vx>=RL2+GS)  
         ){
             this.goalSound.play()
             this.score1+=1
@@ -399,17 +400,19 @@ class Game{
 
         if(D<=R && this.obstacles.obstacleExists){
             if (this.ball.vx>0 && this.player1.playerKicked){
-                console.log("ball colided with obstacle kicked by player 1")
+                //console.log("ball colided with obstacle kicked by player 1")
                 this.obstacles.obstacleExists = false;
                 this.obstacles.obstacleEffect = true;
                 this.player1.PLAYH *= this.obstacles.currentObstacle[0]
+                this.player1.PLAYW *= this.obstacles.currentObstacle[0]
                 this.player1.kickCount = 0
                 this.player2.kickCount = 0
             } else if(this.ball.vx<0 && this.player2.playerKicked){
-                console.log("ball colided with obstacle kicked by player 2")
+                //console.log("ball colided with obstacle kicked by player 2")
                 this.obstacles.obstacleExists = false;
                 this.obstacles.obstacleEffect = true;
                 this.player2.PLAYH *= this.obstacles.currentObstacle[0]
+                this.player2.PLAYW *= this.obstacles.currentObstacle[0]
                 this.player1.kickCount = 0
                 this.player2.kickCount = 0
             }
@@ -417,12 +420,14 @@ class Game{
     }
     resetCollisionObstacles(){
 
-        if(this.player1.kickCount+this.player2.kickCount>= 3){
+        if(this.player1.kickCount+this.player2.kickCount>= 6){
             this.player1.PLAYH = 53
             this.player2.PLAYH = 53
+            this.player1.PLAYW = 30
+            this.player2.PLAYW = 30
             this.obstacles.obstacleEffect = false;
         }
-        console.log(this.obstacles.obstacleEffect)
+        //console.log(this.obstacles.obstacleEffect)
         }
 
 }

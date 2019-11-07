@@ -18,8 +18,14 @@ class Background{
         // this.win2Image.src = "file:///Users/santiagoebalaguer/ironhack/projects/game-project/images/player2-wins.png"
         this.score1 = 0
         this.score2 = 0
+        this.goals = new Image();
+        this.goals.src = "./images/arcos.png"
     }
     
+    drawArcos(){
+        game.context.drawImage(this.goals,16,509,509,208,0,55, 1018, 416)
+    }
+
     drawGoal(){
         //console.log("drawing goal sign!")
         game.context.drawImage(this.goalImage,0,19,215,60,310,170, 430, 120)

@@ -14,7 +14,7 @@ class Player{
         this.moveSpeed = 15
         this.PLAYW = 30
         this.PLAYH = 53
-        this.adj = 0
+        this.adj = 2
         this.RADIUS = this.PLAYH/2+this.adj
         this.PCX = this.x+this.PLAYW/2
         this.PCY = this.y+this.PLAYH/2
