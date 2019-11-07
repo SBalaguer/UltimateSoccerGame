@@ -34,7 +34,8 @@ class Game{
         this.goalSound.volume = 1
         this.minAngle = 1.4;
         this.maxAngle = 0.8;
-        this.gameAccel = 1.15;
+        this.gameAccelX = 1.15;
+        this.gameAccelY = 1.05;
     }
     
 
@@ -107,9 +108,9 @@ class Game{
                 this.timer2 = timestamp;
 
                 if(Math.round(Math.random()+1)===1 ){
-                    this.ball.vx*=this.gameAccel;
+                    this.ball.vx*=this.gameAccelX;
                 }else{
-                    this.ball.vy*=this.gameAccel;
+                    this.ball.vy*=this.gameAccelY;
                 }
             if(this.obstacleTimer < (timestamp-this.obstacleSpeed)){
                 this.obstacleTimer = timestamp;
