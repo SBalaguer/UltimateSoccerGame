@@ -93,9 +93,7 @@ class Game{
             this.player2.runningMotion(timestamp,this.player2.direction);
             this.player1.runningMotion(timestamp,this.player1.direction)
             this.collision(1);
-            if (this.obstacles.obstacleExists && !this.obstacles.obstacleEffect){
-                this.collisionObstacles();
-            }
+            this.collisionObstacles();
             this.resetCollisionObstacles();
             this.score();
             if(this.timer < (timestamp-this.speed)){
@@ -112,9 +110,14 @@ class Game{
                 }else{
                     this.ball.vy*=this.gameAccelY;
                 }
-            if(this.obstacleTimer < (timestamp-this.obstacleSpeed)){
+            if(this.obstacles.obstacleEffect){
+                this.obstacleTimer = timestamp;
+            }
+            if(this.obstacleTimer < (timestamp-this.obstacleSpeed) && !this.obstacles.obstacleEffect && !this.obstacles.obstacleExists){
                 this.obstacleTimer = timestamp;
                 this.obstacles.obstacleCreation(this.obstacles.obstacleExists, this.obstacles.obstacleEffect);
+                this.player1.playerKicked = false;
+                this.player1.playerKicked = false;
                 this.obstacles.obstacleExists = true;
             }
                 /*
@@ -414,7 +417,7 @@ class Game{
     }
     resetCollisionObstacles(){
 
-        if(this.player1.kickCount === 3 || this.player2.kickCount === 3){
+        if(this.player1.kickCount+this.player2.kickCount>= 3){
             this.player1.PLAYH = 53
             this.player2.PLAYH = 53
             this.obstacles.obstacleEffect = false;

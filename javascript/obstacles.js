@@ -36,8 +36,8 @@ class Obstacles{
         for (let i=0; i<this.obstacles.length;i++){
             if(!obstacleExists && !obstacleEffect){
                 this.drawObstacle()
-                this.obstaclePicker = Math.random()
-                this.currentObstacle = this.obstacles[1];
+                this.obstaclePicker = Math.round(Math.random())
+                this.currentObstacle = this.obstacles[this.obstaclePicker];
             }
         }
     }

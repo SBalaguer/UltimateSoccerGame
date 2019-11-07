@@ -13,7 +13,7 @@ class Ball {
         this.vRatio = this.vx/this.vy
         this.BALLW = 20 //99*0.2
         this.BALLH = 19 //95*0.2
-        this.adj = 2
+        this.adj = 4
         this.RADIUS = this.BALLW/2+this.adj
         this.BCX = this.startX+this.BALLW/2
         this.BCY = this.startY+this.BALLH/2
