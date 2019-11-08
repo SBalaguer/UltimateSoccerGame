@@ -18,7 +18,7 @@ class Game{
         this.timer = 0;
         this.timer2 = 0;
         this.speed2 = 2000;
-        this.obstacleSpeed = 5000;
+        this.obstacleSpeed = 7000;
         this.obstacleTimer = 0;
         this.score1 = 0;
         this.score2 = 0;
@@ -43,38 +43,14 @@ class Game{
         this.maxAngle = 0.8;
         this.gameAccelX = 1.15;
         this.gameAccelY = 1.05;
+        this.gameStatus = true
+        this.boton = document.getElementById("boton-inicial")
+        this.request = undefined;
     }
     
 
     startGame(){
-        this.background.drawBackground();
-        this.background.drawScoreboard();
-        this.ball.drawBall();
-        this.player1.resetPosition();
-        this.player2.resetPosition();
-        this.drawPlayers();
-        this.movingObjects(0);
-        this.whistle.play();
-        //this.globalSound.play();
-        this.gameMusic.play();
-        this.score1 = 0;
-        this.score2 = 0;
-        //this.obstacles.obstacleBuilder();
-    }
-
-    drawEverything(){
-        this.context.clearRect(0, 0, this.$canvas.width, this.$canvas.height);
-        this.background.drawBackground();
-        this.background.drawScoreboard();
-        this.ball.drawBall();
-        this.drawPlayers();
-        if (this.obstacles.obstacleExists && !this.obstacles.obstacleEffect){
-            this.obstacles.drawObstacle()
-        }
-        this.background.drawArcos();
-    }
-
-    reset(){
+        console.log("im running reset")
         this.context.clearRect(0, 0, this.$canvas.width, this.$canvas.height);
         this.player1.resetPosition();
         this.player2.resetPosition();
@@ -92,76 +68,118 @@ class Game{
         this.obstacles.obstacleEffect = false;
         this.obstacles.obstacleExists = false;
         this.whistle.play();
+        this.gameStatus = true;
+    }
+
+    drawEverything(){
+        this.context.clearRect(0, 0, this.$canvas.width, this.$canvas.height);
+        this.background.drawBackground();
+        this.background.drawScoreboard();
+        this.ball.drawBall();
+        this.drawPlayers();
+        if (this.obstacles.obstacleExists && !this.obstacles.obstacleEffect){
+            this.obstacles.drawObstacle()
+        }
+        this.background.drawArcos();
+    }
+
+    
+    reset(){
+        console.log("im running reset")
+        this.gameStatus = true;
+        this.score1 = 0
+        this.score2 = 0;
+        this.background.score1 = this.score1
+        this.background.score2 = this.score2
+        this.context.clearRect(0, 0, this.$canvas.width, this.$canvas.height);
+        this.player1.resetPosition();
+        this.player2.resetPosition();
+        this.ball.startX = this.$canvas.width/2-8
+        this.ball.startY = this.$canvas.height/2-14
+        this.drawEverything();
     }
 
     movingObjects(timestamp){
         //console.log("moving Objects is working")
-        window.requestAnimationFrame(timestamp => {
-            this.movingObjects(timestamp)
+        if(this.gameStatus){
+            this.request=window.requestAnimationFrame(timestamp => {
+                this.movingObjects(timestamp)
+            })
             //this.keyPressed.setReleaseKeys2();
-        })
-        if(!this.goalScored){
-            if(this.timer < (timestamp-this.speed)){
-                this.player2.runningMotion(timestamp,this.player2.direction);
-                this.player1.runningMotion(timestamp,this.player1.direction)
-                this.checkBallCollision(); //checks collision against walls
-                this.collision(1); //checks collision agains players
-                this.updateBall() // 
-                this.score(); //checks if there was a goal
-                this.collisionObstacles();    
-                this.timer = timestamp;
-                this.resetCollisionObstacles();
-                this.obstacles.obstacleMove();
-                this.drawEverything()
-            }
-            if(this.timer2 < (timestamp-this.speed2)){
-                this.timer2 = timestamp;
-
-                if(Math.round(Math.random()+1)===1 ){
-                    this.ball.vx*=this.gameAccelX;
-                }else{
-                    this.ball.vy*=this.gameAccelY;
+            if(!this.goalScored){
+                if(this.timer < (timestamp-this.speed)){
+                    this.player2.runningMotion(timestamp,this.player2.direction);
+                    this.player1.runningMotion(timestamp,this.player1.direction)
+                    this.checkBallCollision(); //checks collision against walls
+                    this.collision(1); //checks collision agains players
+                    this.updateBall() // 
+                    this.score(); //checks if there was a goal
+                    this.collisionObstacles();    
+                    this.timer = timestamp;
+                    this.resetCollisionObstacles();
+                    this.obstacles.obstacleMove();
+                    this.drawEverything()
                 }
-            if(this.obstacles.obstacleEffect){
+                if(this.timer2 < (timestamp-this.speed2)){
+                    this.timer2 = timestamp;
+
+                    if(Math.round(Math.random()+1)===1 ){
+                        this.ball.vx*=this.gameAccelX;
+                    }else{
+                        this.ball.vy*=this.gameAccelY;
+                    }
+                if(this.obstacles.obstacleEffect){
+                    this.obstacleTimer = timestamp;
+                }
+                if(this.obstacleTimer < (timestamp-this.obstacleSpeed) && !this.obstacles.obstacleEffect && !this.obstacles.obstacleExists){
+                    this.obstacleTimer = timestamp;
+                    this.obstacles.obstacleCreation(this.obstacles.obstacleExists, this.obstacles.obstacleEffect);
+                    this.player1.playerKicked = false;
+                    this.player1.playerKicked = false;
+                    this.obstacles.obstacleExists = true;
+                }
+                }
+                
+            }else{
+                if(this.player1.scored && this.score1 === 5){
+                    this.player1.celeberationMotion(timestamp);
+                    this.player2.otherTeamGoal();
+                    this.drawEverything()
+                    this.background.drawWinner(this.player1.side)
+                    setTimeout(()=>{
+                        this.gameStatus = false;
+                        this.gameEnd();
+                    },2000)
+                }else if(this.player1.scored){
+                    this.player1.celeberationMotion(timestamp);
+                    this.player2.otherTeamGoal();
+                    this.drawEverything()
+                    this.background.drawGoal();
+                }
+                if(this.player2.scored && this.score2 === 5){
+                    this.player2.celeberationMotion(timestamp);
+                    this.player1.otherTeamGoal();
+                    this.drawEverything()
+                    this.background.drawWinner(this.player2.side)
+                    setTimeout(()=>{
+                        this.gameStatus = false;
+                        this.gameEnd();
+                    },2000)
+                } else if(this.player2.scored){
+                    this.player2.celeberationMotion(timestamp);
+                    this.player1.otherTeamGoal();
+                    this.drawEverything()
+                    this.background.drawGoal();
+                }
+                this.timer = timestamp;
+                this.timer2 = timestamp;
                 this.obstacleTimer = timestamp;
+                this.obstacles.obstacleExists = false;
             }
-            if(this.obstacleTimer < (timestamp-this.obstacleSpeed) && !this.obstacles.obstacleEffect && !this.obstacles.obstacleExists){
-                this.obstacleTimer = timestamp;
-                this.obstacles.obstacleCreation(this.obstacles.obstacleExists, this.obstacles.obstacleEffect);
-                this.player1.playerKicked = false;
-                this.player1.playerKicked = false;
-                this.obstacles.obstacleExists = true;
-            }
-            }
-            
         }else{
-            if(this.player1.scored && this.score1 === 5){
-                this.player1.celeberationMotion(timestamp);
-                this.player2.otherTeamGoal();
-                this.drawEverything()
-                this.background.drawWinner(this.player1.side)
-            }else if(this.player1.scored){
-                this.player1.celeberationMotion(timestamp);
-                this.player2.otherTeamGoal();
-                this.drawEverything()
-                this.background.drawGoal();
-            }
-            if(this.player2.scored && this.score2 === 5){
-                this.player2.celeberationMotion(timestamp);
-                this.player1.otherTeamGoal();
-                this.drawEverything()
-                this.background.drawWinner(this.player2.side)
-            } else if(this.player2.scored){
-                this.player2.celeberationMotion(timestamp);
-                this.player1.otherTeamGoal();
-                this.drawEverything()
-                this.background.drawGoal();
-            }
-            this.timer = timestamp;
-            this.timer2 = timestamp;
-            this.obstacleTimer = timestamp;
-            this.obstacles.obstacleExists = false;
-        }
+
+            cancelAnimationFrame(this.request);
+    }
 
     }
 
@@ -429,5 +447,11 @@ class Game{
         }
         //console.log(this.obstacles.obstacleEffect)
         }
+
+    gameEnd (){
+        this.boton.classList.remove("restart")
+        this.boton.classList.add("start-game")
+        this.boton.innerText = "Play again!"
+    }
 
 }
