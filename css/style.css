@@ -80,7 +80,6 @@ canvas{
 }
 
 .start-game{
-    display: inline;
     cursor: pointer;
     border: 3.5px solid blue;
     border-radius: 4px;
@@ -101,7 +100,6 @@ canvas{
 }
 
 .restart{
-    display: inline;
     cursor: pointer;
     border: 3.5px solid white;
     background-color:blue;

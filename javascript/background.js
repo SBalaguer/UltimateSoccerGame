@@ -37,10 +37,10 @@ class Background{
         game.context.fillText("PLAYER1", 40, 30);
         game.context.fillStyle="#FFF"
         game.context.fillText(`0${this.score1}`, 115, 30);
-        game.context.fillStyle="#3683D1"
-        game.context.fillText("TIME", 145, 30);
-        game.context.fillStyle="#FFF"
-        game.context.fillText("00:00", 190, 30);
+        // game.context.fillStyle="#3683D1"
+        // game.context.fillText("TIME", 145, 30);
+        // game.context.fillStyle="#FFF"
+        // game.context.fillText("00:00", 190, 30);
         game.context.fillStyle="#3683D1"
         game.context.fillText("PLAYER2", 250, 30);
         game.context.fillStyle="#FFF"
