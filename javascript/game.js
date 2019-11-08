@@ -38,7 +38,10 @@ class Game{
         this.goalSound.volume = 0.8
         this.whistle = new Audio();
         this.whistle.src = "./SFX/whistle.wav"
-        this.goalSound.volume = 1
+        this.goalSound.volume = 0.8
+        this.kickSound = new Audio();
+        this.kickSound.src = "./SFX/kick.wav"
+        this.kickSound.volume = 0.8
         this.minAngle = 1.4;
         this.maxAngle = 0.8;
         this.gameAccelX = 1.15;
@@ -52,6 +55,7 @@ class Game{
     startGame(){
         console.log("im running reset")
         this.context.clearRect(0, 0, this.$canvas.width, this.$canvas.height);
+        this.whistle.play();
         this.player1.resetPosition();
         this.player2.resetPosition();
         this.ball.startX = this.$canvas.width/2-8
@@ -67,7 +71,9 @@ class Game{
         this.movingObjects(0);
         this.obstacles.obstacleEffect = false;
         this.obstacles.obstacleExists = false;
-        this.whistle.play();
+        setTimeout(()=>{
+            this.gameMusic.play();
+        },500)
         this.gameStatus = true;
     }
 
@@ -274,6 +280,7 @@ class Game{
             this.player1.playerKicked = true;
             this.player2.playerKicked = false;
             this.player1.kickCount+=1
+            this.kickSound.play()
             //console.log(this.player1.playerKicked, this.player1.kickCount)
         }
         if (D2<=R2){
@@ -288,6 +295,7 @@ class Game{
             this.player2.playerKicked = true;
             this.player1.playerKicked = false;
             this.player2.kickCount+=1
+            this.kickSound.play()
             //console.log(this.player2.playerKicked, this.player2.kickCount)
         }
 
