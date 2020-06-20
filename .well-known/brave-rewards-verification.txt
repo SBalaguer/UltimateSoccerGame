@@ -1,0 +1,4 @@
+This is a Brave Rewards publisher verification file.
+
+Domain: soccer-game-santi-balaguer-174.netlify.app
+Token: b36492b1cded26f797bc23ddd1c575fe97910f5c00ae9febe54b0a93c7def928
